@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TasksService.Host", "TasksService.Host\TasksService.Host.csproj", "{017E4C92-8274-403F-B526-790453EC33ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TasksService", "TasksService\TasksService.csproj", "{188E21D8-25C4-47E9-AD53-BE06CA60ED20}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{017E4C92-8274-403F-B526-790453EC33ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{017E4C92-8274-403F-B526-790453EC33ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{017E4C92-8274-403F-B526-790453EC33ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{017E4C92-8274-403F-B526-790453EC33ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{188E21D8-25C4-47E9-AD53-BE06CA60ED20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{188E21D8-25C4-47E9-AD53-BE06CA60ED20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{188E21D8-25C4-47E9-AD53-BE06CA60ED20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{188E21D8-25C4-47E9-AD53-BE06CA60ED20}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
