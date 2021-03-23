@@ -1,0 +1,11 @@
+<h2>My tasks</h2>
+
+<ul class="heroes">
+    <li *ngFor="let task of tasks" (click)="onSelect(task)" >
+      <span class="badge">{{task.title}}</span> {{task.description}}
+  </li>
+</ul>
+
+<app-task-detail [task]="selectedTask"></app-task-detail>
+
+<a routerLink="/detail">New task</a>

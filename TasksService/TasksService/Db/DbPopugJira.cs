@@ -11,7 +11,7 @@ namespace TasksService.Db
         {
         }
 
-        public ITable<PopugTask> PopugTasks => GetTable<PopugTask>();
+        public ITable<PopugTaskDb> PopugTasks => GetTable<PopugTaskDb>();
         public ITable<User> Users => GetTable<User>();
     }
 }

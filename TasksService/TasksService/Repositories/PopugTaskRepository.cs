@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LinqToDB;
+using Mapster;
 using TasksService.BO;
 using TasksService.Db;
 using TasksService.Repositories.Contracts;
@@ -17,15 +18,19 @@ namespace TasksService.Repositories
         {
             _dbProvider = dbProvider ?? throw new ArgumentNullException(nameof(dbProvider));
         }
-        
+
         public async Task<PopugTask> GetById(Guid popugTaskId)
         {
             await using var db = _dbProvider.GetDbPopugJira();
-            
-            var record = await db.PopugTasks
+
+            var recordQuery = db.PopugTasks
+                .LoadWith(g => g.Creator)
+                .LoadWith(g => g.Assignee);
+
+            var record = await recordQuery
                 .SingleOrDefaultAsync(s => s.Id == popugTaskId);
 
-            return record;
+            return record.Adapt<PopugTask>();
         }
 
         public async Task<List<PopugTask>> GetByAssignee(Guid assigneeId)
@@ -33,10 +38,15 @@ namespace TasksService.Repositories
             await using var db = _dbProvider.GetDbPopugJira();
             
             var records = await db.PopugTasks
-                .Where(s => s.Assignee.Id == assigneeId)
+                .LoadWith(g => g.Creator)
+                .LoadWith(g => g.Assignee)
+                .Where(s => s.AssigneeId == assigneeId)
+                .LoadWith(g => g.Creator)
                 .ToListAsync();
 
-            return records;
+            return records
+                .Select(r => r.Adapt<PopugTask>())
+                .ToList();;
         }
 
         public async Task<PopugTask> AddOrUpdate(PopugTask newTask)
@@ -45,10 +55,26 @@ namespace TasksService.Repositories
 
             if (newTask.Id == Guid.Empty)
                 newTask.Id = Guid.NewGuid();
+
+            var dbEntity = newTask.Adapt<PopugTaskDb>();
             
-            await db.InsertOrReplaceAsync(newTask);
+            await db.InsertOrReplaceAsync(dbEntity);
 
             return newTask;
+        }
+
+        public async Task<List<PopugTask>> GetAll()
+        {
+            await using var db = _dbProvider.GetDbPopugJira();
+
+            var records = await db.PopugTasks
+                .LoadWith(g => g.Creator)
+                .LoadWith(g => g.Assignee)
+                .ToListAsync();
+
+            return records
+                .Select(r => r.Adapt<PopugTask>())
+                .ToList();
         }
     }
 }

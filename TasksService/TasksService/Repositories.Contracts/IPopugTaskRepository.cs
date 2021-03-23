@@ -10,5 +10,6 @@ namespace TasksService.Repositories.Contracts
         Task<PopugTask> GetById(Guid popugTaskId);
         Task<List<PopugTask>> GetByAssignee(Guid assigneeId);
         Task<PopugTask> AddOrUpdate(PopugTask newTask);
+        Task<List<PopugTask>> GetAll();
     }
 }

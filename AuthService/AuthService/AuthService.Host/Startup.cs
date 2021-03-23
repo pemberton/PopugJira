@@ -1,8 +1,8 @@
 using System.Text;
 using AuthService.BO;
 using AuthService.Db;
-using JetBrains.Annotations;
-using LightInject;
+using AuthService.Services;
+using AuthService.Services.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,8 +20,6 @@ namespace AuthService.Host
 {
     public class Startup
     {
-        private IServiceContainer ServiceContainer { get; set; }
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -28,15 +27,6 @@ namespace AuthService.Host
 
         public IConfiguration Configuration { get; }
 
-        // Use this method to add services directly to LightInject
-        // Important: This method must exist in order to replace the default provider.
-        [UsedImplicitly]
-        public void ConfigureContainer(IServiceContainer container)
-        {
-            ServiceContainer = container;
-            container.RegisterInstance(Configuration);
-            container.RegisterFrom<ContainerCompositionRoot>();
-        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -47,6 +37,9 @@ namespace AuthService.Host
             //and this: add identity and create the db
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<IdentityContext>();
+
+            services.TryAddScoped<IUsersAdministrationService, UsersAdministrationService>();
+            services.TryAddScoped<IJwtGenerator, JwtGenerator>();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super secret key"));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -61,6 +54,14 @@ namespace AuthService.Host
                             ValidateIssuer = false,
                         };
                     });
+
+            services.AddCors(o => o.AddPolicy("MyPolicy",
+                builder =>
+                {
+                    builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                }));
 
             services.AddMvc(option =>
             {
@@ -84,6 +85,8 @@ namespace AuthService.Host
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors("MyPolicy");
 
             app.UseHttpsRedirection();
 

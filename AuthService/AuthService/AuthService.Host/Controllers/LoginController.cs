@@ -5,13 +5,12 @@ using AuthService.Host.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 
 namespace AuthService.Host.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/auth")]
 
     public class LoginController : ControllerBase
     {
@@ -35,7 +34,8 @@ namespace AuthService.Host.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<UserDto> Login(string email, string password)
+        [Route("login")]
+        public async Task<UserLoginDto> Login(string email, string password)
         {
             var user = await _userManager.FindByNameAsync(email);
 
@@ -45,7 +45,7 @@ namespace AuthService.Host.Controllers
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
 
             if (result.Succeeded)
-                return new UserDto
+                return new UserLoginDto
                 {
                     Email = user.Email,
                     Token = _jwtGenerator.CreateToken(user),
@@ -56,8 +56,10 @@ namespace AuthService.Host.Controllers
         }
 
         [HttpGet]
-        [Route("some")]
-        public void LoginAgain()
-        {}
+        [Route("logout")]
+        public void Logout()
+        {
+            _signInManager.SignOutAsync();
+        }
     }
 }

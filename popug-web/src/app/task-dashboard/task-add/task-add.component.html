@@ -1,0 +1,13 @@
+<h2>New task</h2>
+<div *ngIf="task">
+
+  <div>
+    <label for="task-title">Title: </label>
+    <input id="task-title" [(ngModel)]="task.title" placeholder="title">
+  </div>    
+    <div>
+      <label for="hero-name">Description: </label>
+      <input id="hero-name" [(ngModel)]="task.description" placeholder="description">
+    </div>  
+  </div>
+  <button (click)="add(task)">Add</button>

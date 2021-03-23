@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using TasksService.BO;
 using TasksService.Repositories.Contracts;
@@ -20,25 +21,28 @@ namespace TasksService.Services
             _tasksRepository = tasksRepository;
         }
 
+        public Task<List<PopugTask>> GetAll()
+        {
+            return _tasksRepository.GetAll();
+        }
+
         public Task<List<PopugTask>> GetByAssignee(Guid assigneeId)
         {
             return _tasksRepository.GetByAssignee(assigneeId);
         }
 
-        public async Task<PopugTask> CreateNew(PopugTask newTask)
+        public async Task<PopugTask> CreateNew(Guid creatorId, PopugTask newTask)
         {
             newTask.TaskState = TaskState.Open;
             newTask.Created = DateTime.Now;
             
-            // TODO: creator
-            var admin = await _usersRepository.GetById(Guid.Parse("EB6F4CA7-17B8-43CB-8D61-784B4BF55D6C"));
-            newTask.Creator = admin;
+            newTask.Creator = await _usersRepository.GetById(creatorId);
             
             newTask.Validate();
             return await _tasksRepository.AddOrUpdate(newTask);
         }
 
-        public async Task<PopugTask> AssignToUser(Guid taskId, Guid userId)
+        public async Task<PopugTask> AssignToUser(Guid actorId, Guid taskId, Guid userId)
         {
             var task = await _tasksRepository.GetById(taskId);
             
@@ -54,7 +58,7 @@ namespace TasksService.Services
             return  await _tasksRepository.AddOrUpdate(task);
         }
         
-        public async Task<PopugTask> ClosePopugTask(Guid taskId)
+        public async Task<PopugTask> ClosePopugTask(Guid actorId, Guid taskId)
         {
             var task = await _tasksRepository.GetById(taskId);
             
@@ -65,17 +69,12 @@ namespace TasksService.Services
             task.TaskState = TaskState.Done;
             return  await _tasksRepository.AddOrUpdate(task);
         }
-        
-        public async Task<PopugTask> ReopenPopugTask(Guid taskId)
+
+        public async Task<PopugTask> GetById(Guid taskId)
         {
             var task = await _tasksRepository.GetById(taskId);
-            
-            if (task == null)
-                throw new ArgumentException("Invalid taskId");
-            
-            task.ClosedAt = null;
-            task.TaskState = TaskState.Open;
-            return  await _tasksRepository.AddOrUpdate(task);
+
+            return task;
         }
     }
 }

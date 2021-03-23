@@ -9,7 +9,7 @@ using TasksService.Services.Contracts;
 namespace TasksService.Host.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TasksController : ControllerBase
     {
         private readonly ILogger<TasksController> _logger;
@@ -24,36 +24,44 @@ namespace TasksService.Host.Controllers
         }
 
         [HttpGet]
+        public async Task<IEnumerable<PopugTask>> GetAll()
+        {
+            return await _taskService.GetAll();
+        }
+
+        [HttpGet]
+        [Route("{taskId}")]
+        public async Task<PopugTask> GetById(Guid taskId)
+        {
+            return await _taskService.GetById(taskId);
+        }
+
+        [HttpGet]
+        [Route("assignee/{assigneeId}")]
         public async Task<IEnumerable<PopugTask>> Get(Guid assigneeId)
         {
             return await _taskService.GetByAssignee(assigneeId);
         }
 
         [HttpPut]
-        public async Task Add(PopugTask task)
+        [Route("{creatorId}")]
+        public async Task Add(Guid creatorId, PopugTask task)
         {
-            await _taskService.CreateNew(task);
+            await _taskService.CreateNew(creatorId, task);
         }
 
         [HttpPost]
-        [Route("{taskId}/assignTo/{userId}")]
-        public async Task AssignToUser(Guid taskId, Guid userId)
+        [Route("{actorId}/{taskId}/assignTo/{userId}")]
+        public async Task AssignToUser(Guid actorId, Guid taskId, Guid userId)
         {
-            await _taskService.AssignToUser(taskId, userId);
+            await _taskService.AssignToUser(actorId, taskId, userId);
         }
         
         [HttpPost]
-        [Route("{taskId}/close")]
-        public async Task Close(Guid taskId)
+        [Route("{actorId}/{taskId}/close")]
+        public async Task Close(Guid actorId, Guid taskId)
         {
-            await _taskService.ClosePopugTask(taskId);
-        }
-        
-        [HttpPost]
-        [Route("{taskId}/reopen")]
-        public async Task Reopen(Guid taskId)
-        {
-            await _taskService.ReopenPopugTask(taskId);
+            await _taskService.ClosePopugTask(actorId, taskId);
         }
     }
 }
