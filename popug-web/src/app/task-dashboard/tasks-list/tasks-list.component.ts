@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Task } from '../task';
 import { TaskService } from '../task.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-tasks-list',
@@ -12,7 +13,8 @@ export class TasksListComponent implements OnInit {
   tasks: Task[] = [];
   selectedTask?: Task;
 
-  constructor(private taskService: TaskService) { }
+  constructor(private taskService: TaskService,
+    private router: Router) { }
 
   ngOnInit() {
     this.getTasks();
@@ -25,5 +27,11 @@ export class TasksListComponent implements OnInit {
 
   onSelect(task:Task):void {
     this.selectedTask = task;
+  }
+
+  onAssignTasks():void {
+    this.taskService.assingTasks()
+    .toPromise()
+    .then(_ => this.router.navigate(['tasks']));;
   }
 }

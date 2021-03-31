@@ -44,5 +44,9 @@ namespace TasksService.Db
         [Column]
         public DateTime? ClosedAt { get; set; }
 
+        [Nullable]
+        [Column(Name="AssignCost")]
+        public decimal? Cost { get; set; }
+
     }
 }

@@ -7,5 +7,8 @@ namespace TasksService.Repositories.Contracts
     public interface IUsersRepository
     {
         Task<User> GetById(Guid userId);
+        Task<UsersCollection> GetAll();
+        Task AddOrUpdate(User user);
+
     }
 }

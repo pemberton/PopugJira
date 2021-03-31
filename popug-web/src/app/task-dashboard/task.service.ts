@@ -22,10 +22,15 @@ export class TaskService {
   }
 
   addTask(task: Task){
-    this.http.put<Task>(this.taskServiceUrl, task);
+    task.assignCost = 0;
+    return this.http.put<Task>(this.taskServiceUrl, task);
   }
 
   editTask(task: Task){
     this.http.post<Task>(this.taskServiceUrl, task);
+  }
+
+  assingTasks() {
+    return this.http.post(this.taskServiceUrl + "/assign", null);
   }
 }

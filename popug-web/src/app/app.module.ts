@@ -8,13 +8,20 @@ import { HttpClientModule } from '@angular/common/http';
 import { TaskDetailComponent } from './task-dashboard/task-detail/task-detail.component';
 import { FormsModule } from '@angular/forms';
 import { TaskAddComponent } from './task-dashboard/task-add/task-add.component';
+import { AuthorizationInterceptor } from './authorization.interceptor';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { LoginComponent } from './auth/login/login.component';
+import { CookieService } from 'ngx-cookie-service';
+import { LogoutComponent } from './auth/logout/logout.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TasksListComponent,
     TaskDetailComponent,
-    TaskAddComponent
+    TaskAddComponent,
+    LoginComponent,
+    LogoutComponent
   ],
   imports: [
     BrowserModule,
@@ -22,7 +29,14 @@ import { TaskAddComponent } from './task-dashboard/task-add/task-add.component';
     HttpClientModule,
     FormsModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthorizationInterceptor,
+      multi: true
+    },
+    CookieService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

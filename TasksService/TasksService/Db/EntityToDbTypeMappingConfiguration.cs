@@ -1,5 +1,4 @@
-﻿using System;
-using Mapster;
+﻿using Mapster;
 using TasksService.BO;
 
 namespace TasksService.Db

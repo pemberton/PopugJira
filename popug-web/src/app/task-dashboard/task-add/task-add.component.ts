@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Task } from '../task';
 import { TaskService } from '../task.service';
 
@@ -14,7 +14,8 @@ export class TaskAddComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private taskService: TaskService) {
+    private taskService: TaskService,
+    private router: Router) {
       this.task = {} as Task;
      }
 
@@ -30,4 +31,9 @@ export class TaskAddComponent implements OnInit {
               .subscribe(task => this.task = task);      
   }
 
+  add(task: Task): void {          
+        this.taskService.addTask(task)
+        .toPromise()
+        .then(_ => this.router.navigate(['tasks']));
+  }
 }

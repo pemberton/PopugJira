@@ -37,7 +37,7 @@ namespace AuthService.Host.Controllers
         [Route("login")]
         public async Task<UserLoginDto> Login(string email, string password)
         {
-            var user = await _userManager.FindByNameAsync(email);
+            var user = await _userManager.FindByEmailAsync(email);
 
             if (user == null)
                 throw new MethodAccessException();
@@ -47,9 +47,9 @@ namespace AuthService.Host.Controllers
             if (result.Succeeded)
                 return new UserLoginDto
                 {
+                    UserName = user.UserName,
                     Email = user.Email,
-                    Token = _jwtGenerator.CreateToken(user),
-                    UserName = user.UserName
+                    Token = _jwtGenerator.CreateToken(user)
                 };
 
             throw new MethodAccessException();

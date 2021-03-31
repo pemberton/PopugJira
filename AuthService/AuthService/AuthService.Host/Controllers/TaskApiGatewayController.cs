@@ -5,8 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using AuthService.BO;
-using AuthService.Host.Dto;
-using Microsoft.AspNetCore.Authorization;
+using AuthService.Host.Dto.TaskServiceDto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,40 +33,28 @@ namespace AuthService.Host.Controllers
             return await Deserialize<List<PopugTaskDto>>(response);
         }
 
-        [HttpGet]
-        [Route("{taskId}")]
-        public async Task<PopugTaskDto> GetById(Guid taskId)
-        {
-            var response = await client.GetAsync($"{taskApiUrl}/{taskId}");
-            response.EnsureSuccessStatusCode();
-
-            return await Deserialize<PopugTaskDto>(response);
-         }
-
-        // [HttpGet]
-        // [Route("assignee/{assigneeId}")]
-        // public async Task<IEnumerable<PopugTaskDto>> Get(Guid assigneeId)
-        // {
-        //     return await _taskService.GetByAssignee(assigneeId);
-        // }
-        //
         [HttpPut]
-        public async Task Add(PopugTaskDto task)
+        public async Task Add([FromBody]PopugTaskDto task)
         {
             var serialized = JsonSerializer.Serialize(task);
             var content = new StringContent(serialized, Encoding.UTF8, "application/json");
-            var id = _userManager.GetUserId(User);
-            var response = await client.PutAsync($"{taskApiUrl}/{id}", content);
+            var email = _userManager.GetUserId(User);
+            var appUser = await _userManager.FindByNameAsync(email);
+            var response = await client.PutAsync($"{taskApiUrl}/{appUser.Id}", content);
             response.EnsureSuccessStatusCode();
         }
-        //
-        // [HttpPost]
-        // [Route("{taskId}/assignTo/{userId}")]
-        // public async Task AssignToUser(Guid taskId, Guid userId)
-        // {
-        //     await _taskService.AssignToUser(taskId, userId);
-        // }
-        //
+
+        // TODO: проверить по роли, что менеджер
+         [HttpPost]
+         [Route("assign")]
+         public async Task AssignTasks()
+         {
+             var email = _userManager.GetUserId(User);
+             var appUser = await _userManager.FindByNameAsync(email);
+             var response = await client.PostAsync($"{taskApiUrl}/{appUser.Id}/assign", null);
+             response.EnsureSuccessStatusCode();
+         }
+
         // [HttpPost]
         // [Route("{taskId}/close")]
         // public async Task Close(Guid taskId)
@@ -88,11 +75,13 @@ namespace AuthService.Host.Controllers
 
             var options = new JsonSerializerOptions
             {
-                PropertyNameCaseInsensitive = true,
+                PropertyNameCaseInsensitive = true
             };
 
             var tasks = JsonSerializer.Deserialize<T>(responseBody, options);
             return tasks;
         }
+
+
     }
 }

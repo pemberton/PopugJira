@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading.Tasks;
 using TasksService.BO;
 using TasksService.Repositories.Contracts;
 using TasksService.Services.Contracts;
+using TasksService.Streams.Contracts;
 
 namespace TasksService.Services
 {
@@ -12,13 +12,16 @@ namespace TasksService.Services
     {
         private readonly IUsersRepository _usersRepository;
         private readonly IPopugTaskRepository _tasksRepository;
+        private readonly ITaskBusinessEventsStream _businessEventsStream;
 
         public PopugTaskAdministrationService(
             IUsersRepository usersRepository,
-            IPopugTaskRepository tasksRepository)
+            IPopugTaskRepository tasksRepository,
+            ITaskBusinessEventsStream businessEventsStream)
         {
             _usersRepository = usersRepository;
             _tasksRepository = tasksRepository;
+            _businessEventsStream = businessEventsStream;
         }
 
         public Task<List<PopugTask>> GetAll()
@@ -33,29 +36,29 @@ namespace TasksService.Services
 
         public async Task<PopugTask> CreateNew(Guid creatorId, PopugTask newTask)
         {
-            newTask.TaskState = TaskState.Open;
-            newTask.Created = DateTime.Now;
-            
-            newTask.Creator = await _usersRepository.GetById(creatorId);
-            
-            newTask.Validate();
-            return await _tasksRepository.AddOrUpdate(newTask);
+            var creator = await _usersRepository.GetById(creatorId);
+            var createdTask = PopugTask.CreateNew(newTask, creator);
+            var savedTask = await _tasksRepository.AddOrUpdate(createdTask);
+
+            await _businessEventsStream.StreamAboutTaskCreated(savedTask);
+            return savedTask;
         }
 
-        public async Task<PopugTask> AssignToUser(Guid actorId, Guid taskId, Guid userId)
+        public async Task AssignTasks(Guid actorId)
         {
-            var task = await _tasksRepository.GetById(taskId);
-            
-            if (task == null)
-                throw new ArgumentException("Invalid taskId");
+            // проверить, что ассайнит менеджер
 
-            var user = await _usersRepository.GetById(userId);
-            
-            if (user == null)
-                throw new ArgumentException("Invalid userId");
-            
-            task.Assignee = user;
-            return  await _tasksRepository.AddOrUpdate(task);
+            var tasks = await _tasksRepository.GetAll();
+
+            var users = await _usersRepository.GetAll();
+
+            foreach (var task in tasks)
+            {
+                task.AssignToRandomUser(users);
+                await _tasksRepository.AddOrUpdate(task);
+
+                await _businessEventsStream.StreamAboutTaskAssigned(task);
+            }
         }
         
         public async Task<PopugTask> ClosePopugTask(Guid actorId, Guid taskId)
@@ -64,10 +67,17 @@ namespace TasksService.Services
             
             if (task == null)
                 throw new ArgumentException("Invalid taskId");
-            
-            task.ClosedAt = DateTime.Now;
-            task.TaskState = TaskState.Done;
-            return  await _tasksRepository.AddOrUpdate(task);
+
+            var actor = await _usersRepository.GetById(actorId);
+
+            if (actor == null)
+                throw new ArgumentException("Invalid actorId");
+
+            task.Close(actor);
+
+            var closedTask =  await _tasksRepository.AddOrUpdate(task);
+            await _businessEventsStream.StreamAboutTaskClosed(closedTask);
+            return closedTask;
         }
 
         public async Task<PopugTask> GetById(Guid taskId)

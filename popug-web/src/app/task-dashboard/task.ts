@@ -2,10 +2,15 @@ export interface Task {
     id: number;
     title: string;
     description: string;
-    creator: User;
+    creator: TaskUser;
+    assignee: TaskUser;
+    created: Date;
+    taskState: string;
+    closedAt: Date;
+    assignCost: number;
   }
 
-  export interface User {
+  export interface TaskUser {
     id: number;
     name: string;
   }

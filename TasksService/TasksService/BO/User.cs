@@ -10,7 +10,7 @@ namespace TasksService.BO
         public Guid Id { get; set; }
         
         [NotNull]
-        [Column]
-        public string Name { get; set; }
+        [Column(Name="Name")]
+        public string UserName { get; set; }
     }
 }

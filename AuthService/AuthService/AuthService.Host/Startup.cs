@@ -1,8 +1,12 @@
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using AuthService.BO;
 using AuthService.Db;
 using AuthService.Services;
 using AuthService.Services.Contracts;
+using AuthService.Streams;
+using AuthService.Streams.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -40,6 +44,8 @@ namespace AuthService.Host
 
             services.TryAddScoped<IUsersAdministrationService, UsersAdministrationService>();
             services.TryAddScoped<IJwtGenerator, JwtGenerator>();
+            services.TryAddScoped<IMessageBus, MessageBus>();
+            services.TryAddScoped<IUserBusinessEventsStream, UserBusinessEventsStream>();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super secret key"));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -75,7 +81,12 @@ namespace AuthService.Host
                 option.Filters.Add(new AuthorizeFilter(policy));
             }).SetCompatibilityVersion(CompatibilityVersion.Latest);
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

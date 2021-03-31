@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AuthService.Host.Dto
+namespace AuthService.Host.Dto.TaskServiceDto
 {
     public class PopugTaskDto
     {
@@ -8,9 +8,9 @@ namespace AuthService.Host.Dto
 
         public string Title { get; set; }
 
-        public UserGetAllDto Creator { get; set; }
+        public TaskUserDto Creator { get; set; }
 
-        public UserGetAllDto Assignee { get; set; }
+        public TaskUserDto Assignee { get; set; }
 
         public DateTime Created { get; set; }
 
@@ -19,5 +19,7 @@ namespace AuthService.Host.Dto
         public string Description { get; set; }
 
         public DateTime? ClosedAt { get; set; }
+
+        public decimal AssignCost { get; set; }
     }
 }

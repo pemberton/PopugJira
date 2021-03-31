@@ -10,7 +10,7 @@ namespace TasksService.Services.Contracts
         Task<List<PopugTask>> GetAll();
         Task<List<PopugTask>> GetByAssignee(Guid assigneeId);
         Task<PopugTask> CreateNew(Guid creatorId, PopugTask newTask);
-        Task<PopugTask> AssignToUser(Guid actorId,  Guid taskId, Guid userId);
+        Task AssignTasks(Guid actorId);
         Task<PopugTask> ClosePopugTask(Guid actorId,  Guid taskId);
         Task<PopugTask> GetById(Guid taskId);
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using LinqToDB;
 using TasksService.BO;
@@ -25,6 +24,22 @@ namespace TasksService.Repositories
                 .SingleOrDefaultAsync(s => s.Id == userId);
 
             return record;
+        }
+
+        public async Task<UsersCollection> GetAll()
+        {
+            await using var db = _dbProvider.GetDbPopugJira();
+
+            var record = await db.Users
+                .ToListAsync();
+
+            return new UsersCollection(record);
+        }
+
+        public async Task AddOrUpdate(User user)
+        {
+            await using var db = _dbProvider.GetDbPopugJira();
+            await db.InsertOrReplaceAsync(user);
         }
     }
 }

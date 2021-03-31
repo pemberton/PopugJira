@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TasksService.Db;
+using TasksService.Streams;
 
 namespace TasksService.Host
 {
@@ -34,14 +35,7 @@ namespace TasksService.Host
         public void ConfigureServices(IServiceCollection services)
         {
             EntityToDbTypeMappingConfiguration.InitConfig();
-
-            // services.AddCors(o => o.AddPolicy("MyPolicy",
-            //     builder =>
-            //     {
-            //         builder.AllowAnyOrigin()
-            //             .AllowAnyMethod()
-            //             .AllowAnyHeader();
-            //     }));
+            services.AddHostedService<HostedConsumer>();
             services.AddControllers();
         }
 
@@ -52,8 +46,6 @@ namespace TasksService.Host
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            //app.UseCors("MyPolicy");
 
             app.UseHttpsRedirection();
 

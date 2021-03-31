@@ -1,4 +1,8 @@
+<app-logout></app-logout>
 <h2>My tasks</h2>
+
+<button (click)="onAssignTasks()">Assign tasks</button>
+<a routerLink="/detail">New task</a>
 
 <ul class="heroes">
     <li *ngFor="let task of tasks" (click)="onSelect(task)" >
@@ -8,4 +12,3 @@
 
 <app-task-detail [task]="selectedTask"></app-task-detail>
 
-<a routerLink="/detail">New task</a>

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using TasksService.BO;
 using TasksService.Services.Contracts;
 
@@ -12,17 +11,15 @@ namespace TasksService.Host.Controllers
     [Route("api/[controller]")]
     public class TasksController : ControllerBase
     {
-        private readonly ILogger<TasksController> _logger;
         private readonly IPopugTaskAdministrationService _taskService;
 
         public TasksController(
-            ILogger<TasksController> logger,
             IPopugTaskAdministrationService taskService)
         {
-            _logger = logger;
             _taskService = taskService;
         }
 
+        // временно, удалить, когда будет много заасайненных задач
         [HttpGet]
         public async Task<IEnumerable<PopugTask>> GetAll()
         {
@@ -51,10 +48,10 @@ namespace TasksService.Host.Controllers
         }
 
         [HttpPost]
-        [Route("{actorId}/{taskId}/assignTo/{userId}")]
-        public async Task AssignToUser(Guid actorId, Guid taskId, Guid userId)
+        [Route("{actorId}/assign")]
+        public async Task AssignTasks(Guid actorId)
         {
-            await _taskService.AssignToUser(actorId, taskId, userId);
+            await _taskService.AssignTasks(actorId);
         }
         
         [HttpPost]
