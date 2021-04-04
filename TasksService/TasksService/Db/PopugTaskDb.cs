@@ -21,7 +21,7 @@ namespace TasksService.Db
         [Association(ThisKey="CreatorId", OtherKey="Id", CanBeNull=false)]
         public User Creator { get; set; }
 
-        [NotNull]
+        [Nullable]
         [Column(Name="Assignee")]
         public Guid? AssigneeId { get; set; }
 

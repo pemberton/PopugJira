@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using AuthService.BO;
 using AuthService.Host.Dto.TaskServiceDto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,9 +26,10 @@ namespace AuthService.Host.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<PopugTaskDto>> GetAll()
+        [Route("{actorId}")]
+        public async Task<IEnumerable<PopugTaskDto>> GetAll(string actorId)
         {
-            var response = await client.GetAsync(taskApiUrl);
+            var response = await client.GetAsync(taskApiUrl + $"/assignee/{actorId}");
             response.EnsureSuccessStatusCode();
 
             return await Deserialize<List<PopugTaskDto>>(response);
@@ -43,9 +46,9 @@ namespace AuthService.Host.Controllers
             response.EnsureSuccessStatusCode();
         }
 
-        // TODO: проверить по роли, что менеджер
          [HttpPost]
          [Route("assign")]
+         //[Authorize(Roles = "manager")]
          public async Task AssignTasks()
          {
              var email = _userManager.GetUserId(User);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting.Internal;
 using TasksService.BO;
 using TasksService.Services.Contracts;
 
@@ -17,13 +18,6 @@ namespace TasksService.Host.Controllers
             IPopugTaskAdministrationService taskService)
         {
             _taskService = taskService;
-        }
-
-        // временно, удалить, когда будет много заасайненных задач
-        [HttpGet]
-        public async Task<IEnumerable<PopugTask>> GetAll()
-        {
-            return await _taskService.GetAll();
         }
 
         [HttpGet]

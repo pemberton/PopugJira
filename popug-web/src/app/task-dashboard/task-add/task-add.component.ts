@@ -20,15 +20,6 @@ export class TaskAddComponent implements OnInit {
      }
 
   ngOnInit(): void {
-    this.getTask();
-  }
-
-  getTask(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-
-    if (id != null)
-        this.taskService.getTask(id)
-              .subscribe(task => this.task = task);      
   }
 
   add(task: Task): void {          

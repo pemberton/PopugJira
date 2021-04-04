@@ -22,6 +22,8 @@ export class AuthService {
       .toPromise().then(data => {
         this.cookie.set('auth', data.token);
         this.cookie.set('userName', data.userName);
+        this.cookie.set('userId', data.userId);
+        this.cookie.set('userRole', data.role);
         return data;
       });
   }
@@ -37,10 +39,21 @@ export class AuthService {
     return this.cookie.get('userName');
   }
 
+  getUserId(): string {
+    return this.cookie.get('userId');
+  }
+
+  getUserRole(): string {
+    return this.cookie.get('userRole');
+  }
+
   logout(): Promise<boolean>{
     return this.http.get(this.authServiceUrl + '/logout')
       .toPromise().then(_ => {
         this.cookie.delete('auth');
+        this.cookie.delete('userName');
+        this.cookie.delete('userId');
+        this.cookie.delete('userRole');
         return true;
       });
   }

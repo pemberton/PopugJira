@@ -13,5 +13,7 @@ namespace AuthService.Services.Contracts
         Task<bool> AssignRoleToUser(string roleName, string userId);
 
         Task<List<UserWithRole>> GetAllUsers();
+
+        Task<UserWithRole> GetUserWithRole(ApplicationUser user);
     }
 }

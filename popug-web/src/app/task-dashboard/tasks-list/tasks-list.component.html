@@ -1,7 +1,7 @@
 <app-logout></app-logout>
 <h2>My tasks</h2>
 
-<button (click)="onAssignTasks()">Assign tasks</button>
+<button *ngIf="isManager" (click)="onAssignTasks()">Assign tasks</button>
 <a routerLink="/detail">New task</a>
 
 <ul class="heroes">

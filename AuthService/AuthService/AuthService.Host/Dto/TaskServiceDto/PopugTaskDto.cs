@@ -20,6 +20,6 @@ namespace AuthService.Host.Dto.TaskServiceDto
 
         public DateTime? ClosedAt { get; set; }
 
-        public decimal AssignCost { get; set; }
+        public decimal Cost { get; set; }
     }
 }

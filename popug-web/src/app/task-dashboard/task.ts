@@ -7,10 +7,10 @@ export interface Task {
     created: Date;
     taskState: string;
     closedAt: Date;
-    assignCost: number;
+    cost: number;
   }
 
   export interface TaskUser {
     id: number;
-    name: string;
+    userName: string;
   }

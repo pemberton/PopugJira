@@ -1,4 +1,4 @@
-﻿namespace AuthService.Host.Dto
+﻿namespace AuthService.Host.Dto.AuthService
 {
     public class UserCreateNewDto
     {

@@ -80,19 +80,25 @@ namespace AuthService.Services
             var result = new List<UserWithRole>();
             foreach (var user in allUsers)
             {
-                var role = await _userManager.GetRolesAsync(user);
-                var userWithRole = new UserWithRole
-                {
-                    Id = user.Id,
-                    Email = user.Email,
-                    UserName = user.UserName,
-                    Role = role.Count > 0 ? role[0] : null
-                };
-
+                var userWithRole = await GetUserWithRole(user);
                 result.Add(userWithRole);
             }
 
             return result;
+        }
+
+        public async Task<UserWithRole> GetUserWithRole(ApplicationUser user)
+        {
+            var role = await _userManager.GetRolesAsync(user);
+            var userWithRole = new UserWithRole
+            {
+                Id = user.Id,
+                Email = user.Email,
+                UserName = user.UserName,
+                Role = role.Count > 0 ? role[0] : null
+            };
+
+            return userWithRole;
         }
     }
 }

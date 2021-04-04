@@ -2,10 +2,10 @@
 
   <h2>{{task.title}}</h2>
   <div><label>Description: </label> {{task.description}} </div>
-  <div><label>Creator: </label> {{task.creator.name}} </div>
+  <div><label>Creator: </label> {{task.creator.userName}} </div>
   <div><label>Created: </label> {{task.created | date: 'mediumDate'}} </div>
-  <div><label>Assign cost: </label> {{task.assignCost}} </div>
-  <div><label>Assignee: </label> {{task.assignee?.name}} </div>
+  <div><label>Assign cost: </label> {{task.cost}} </div>
+  <div><label>Assignee: </label> {{task.assignee?.userName}} </div>
   <div><label>State: </label> {{task.taskState}} </div>
   <div><label>Closed at: </label> {{task.closedAt}} </div>
 
