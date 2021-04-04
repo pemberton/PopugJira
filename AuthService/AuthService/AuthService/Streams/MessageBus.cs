@@ -9,6 +9,8 @@ namespace AuthService.Streams
     {
         private readonly ProducerConfig config;
         public const string UsersTopic = "users_topic";
+        public const string RolesTopic = "roles_topic";
+        public const string UserGrantsRolesTopic = "users_roles_topic";
 
         public MessageBus()
         {

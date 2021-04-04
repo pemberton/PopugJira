@@ -1,41 +1,44 @@
-using JetBrains.Annotations;
-using LightInject;
+using AuthStuff.Container;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using TasksService.Db;
+using TasksService.Repositories;
+using TasksService.Repositories.Contracts;
+using TasksService.Services;
+using TasksService.Services.Contracts;
 using TasksService.Streams;
+using TasksService.Streams.Contracts;
 
 namespace TasksService.Host
 {
     public class Startup
     {
-        private IServiceContainer ServiceContainer { get; set; }
-        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
-        
-        // Use this method to add services directly to LightInject
-        // Important: This method must exist in order to replace the default provider.
-        [UsedImplicitly]
-        public void ConfigureContainer(IServiceContainer container)
-        {
-            ServiceContainer = container;
-            container.RegisterInstance(Configuration);
-            container.RegisterFrom<ContainerCompositionRoot>();
-        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             EntityToDbTypeMappingConfiguration.InitConfig();
-            services.AddHostedService<HostedConsumer>();
+
+            services.TryAddSingleton(Configuration);
+            services.TryAddScoped<IDbProvider, DbProvider>();
+            services.TryAddScoped<IUsersRepository, UsersRepository>();
+            services.TryAddScoped<IPopugTaskRepository, PopugTaskRepository>();
+            services.TryAddScoped<IPopugTaskAdministrationService, PopugTaskAdministrationService>();
+            services.TryAddScoped<ITaskBusinessEventsStream, TaskBusinessEventsStream>();
+
+            services.TryAddScopedAuthServices();
+            services.AddHostedAuthService();
+
             services.AddControllers();
         }
 

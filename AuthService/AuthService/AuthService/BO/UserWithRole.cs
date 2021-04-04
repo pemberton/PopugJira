@@ -1,11 +1,10 @@
-﻿namespace AuthService.Host.Dto
+﻿namespace AuthService.BO
 {
-    public class UserGetAllDto
+    public class UserWithRole
     {
         public string Id { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
-
         public string Role { get; set; }
     }
 }

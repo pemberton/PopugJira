@@ -3,30 +3,30 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
-using Microsoft.Extensions.Hosting;
-using TasksService.BO;
-using TasksService.Repositories.Contracts;
 
-namespace TasksService.Streams
+namespace AuthStuff.Consumers
 {
-    public class HostedConsumer : IHostedService
+    public interface IConsumer
     {
-        private readonly IUsersRepository _usersRepository;
+        Task StartAsync(CancellationToken cancellationToken);
+        Task StopAsync(CancellationToken cancellationToken);
+    }
+
+    public abstract class Consumer<T> : IConsumer
+    {
         private readonly ConsumerConfig conf;
 
-        public HostedConsumer(IUsersRepository usersRepository)
+        protected Consumer(string groupId)
         {
-            _usersRepository = usersRepository;
             conf = new ConsumerConfig
             {
-                GroupId = GroupId,
+                GroupId = groupId,
                 BootstrapServers = "localhost:9092",
                 AutoOffsetReset = AutoOffsetReset.Earliest
             };
         }
 
-        public string GroupId = "users_group";
-        public string TopicName = "users_topic";
+        protected string TopicName;
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
@@ -48,8 +48,8 @@ namespace TasksService.Streams
                         PropertyNameCaseInsensitive = true
                     };
 
-                    var user = JsonSerializer.Deserialize<User>(consumer.Message.Value, options);
-                    await _usersRepository.AddOrUpdate(user);
+                    var message = JsonSerializer.Deserialize<T>(consumer.Message.Value, options);
+                    await HandleMessage(message);
                 }
             }
             catch (Exception)
@@ -62,5 +62,7 @@ namespace TasksService.Streams
         {
             return Task.CompletedTask;
         }
+
+        protected abstract Task HandleMessage(T message);
     }
 }

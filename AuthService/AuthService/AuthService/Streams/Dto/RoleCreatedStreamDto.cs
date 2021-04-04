@@ -1,8 +1,8 @@
 ﻿namespace AuthService.Streams.Dto
 {
-    public class UserCreatedStreamDto
+    public class RoleCreatedStreamDto
     {
         public string Id { get; set; }
-        public string UserName { get; set; }
+        public string Name { get; set; }
     }
 }

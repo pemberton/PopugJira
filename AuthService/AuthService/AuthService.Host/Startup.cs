@@ -42,10 +42,10 @@ namespace AuthService.Host
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<IdentityContext>();
 
-            services.TryAddScoped<IUsersAdministrationService, UsersAdministrationService>();
+            services.TryAddScoped<IUsersAndRolesAdministrationService, UsersAndRolesAdministrationService>();
             services.TryAddScoped<IJwtGenerator, JwtGenerator>();
             services.TryAddScoped<IMessageBus, MessageBus>();
-            services.TryAddScoped<IUserBusinessEventsStream, UserBusinessEventsStream>();
+            services.TryAddScoped<IUserBusinessEventsStream, AuthBusinessEventsStream>();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super secret key"));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
